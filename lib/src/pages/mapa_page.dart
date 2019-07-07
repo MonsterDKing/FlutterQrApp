@@ -4,9 +4,16 @@ import 'package:latlong/latlong.dart';
 import 'package:qrreaderapp/src/models/scan_model.dart';
 
 
-class MapaPage extends StatelessWidget {
+class MapaPage extends StatefulWidget {
+  @override
+  _MapaPageState createState() => _MapaPageState();
+}
+
+class _MapaPageState extends State<MapaPage> {
+    String tipoMapa = 'streets';
 
   final map = new MapController();
+
   @override
   Widget build(BuildContext context) {
 
@@ -25,6 +32,29 @@ class MapaPage extends StatelessWidget {
           ],
         ),
         body: _crearFlutterMap(scan),
+        floatingActionButton: _crearBotonFlotante(context),
+    );
+  }
+
+  Widget _crearBotonFlotante(BuildContext context){
+    return FloatingActionButton(
+      child: Icon(Icons.repeat),
+      backgroundColor: Theme.of(context).primaryColor,
+      onPressed: (){
+        if(tipoMapa == 'streets'){
+          tipoMapa = 'dark';
+        }else if(tipoMapa == 'dark'){
+          tipoMapa = 'light';
+        }else if(tipoMapa == 'light'){
+          tipoMapa = 'outdoors';
+        }else if(tipoMapa == 'outdoors'){
+          tipoMapa = 'satellite';
+        }else{
+          tipoMapa = 'streets';
+        }
+        print(tipoMapa);
+        setState((){});
+      },
     );
   }
 
@@ -48,7 +78,7 @@ class MapaPage extends StatelessWidget {
       '{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
       additionalOptions: {
         'accessToken': 'pk.eyJ1Ijoia2luZ29ma2luZzk5IiwiYSI6ImNqeHNyZ3A3ZzBtcjEzbXJzM2N0ZXVyYjQifQ.BGjgSReTmfWfg3pEeNSO9g',
-        'id': 'mapbox.satellite' //streets,  dark , light , outdoors, satellite 
+        'id': 'mapbox.${tipoMapa}' //streets,  dark , light , outdoors, satellite 
       }
     );
   }
