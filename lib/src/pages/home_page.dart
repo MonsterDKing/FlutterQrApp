@@ -1,13 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:qrcode_reader/qrcode_reader.dart';
 import 'package:qrreaderapp/src/bloc/Scans.dart';
 import 'package:qrreaderapp/src/models/scan_model.dart';
 import 'package:qrreaderapp/src/providers/db_provider.dart';
-
+import 'package:qrreaderapp/src/utils/utils.dart' as util;
 
 import 'direcciones_page.dart';
 import 'mapas_page.dart';
-
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,9 +16,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final scansBloc = new ScansBloc();
-  
+
   int currentIndex = 0;
 
   @override
@@ -38,58 +38,61 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.filter_center_focus),
-        onPressed: _scanQR,
+        onPressed: () => _scanQR(context),
       ),
     );
   }
 
-  _scanQR()async{
-    
+  _scanQR(BuildContext context) async {
     String futureString = 'https://fernando-herrera.com';
 
     // try{
     //   futureString = await new QRCodeReader().scan();
     // }catch(e){
     //   futureString = e.toString();
-      
+
     // }
 
-     if(futureString != null){
-       print('Si entro aqui');
-       final scan = ScanModel(valor: futureString);
+    if (futureString != null) {
+      final scan = ScanModel(valor: futureString);
       scansBloc.agregarScan(scan);
-       
-     }
-    
+
+       final scan2 = ScanModel(valor: 'geo:19.70484,-101.19573');
+       scansBloc.agregarScan(scan2);
+      if (Platform.isIOS) {
+        Future.delayed(Duration(milliseconds: 750), () {
+          util.abrirScan(scan,context);
+        });
+      } else {
+        util.abrirScan(scan,context);
+      }
+    }
   }
 
-  Widget _crearBottomNavigationBar(){
+  Widget _crearBottomNavigationBar() {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      onTap: (index){
+      onTap: (index) {
         setState(() {
-         currentIndex = index; 
+          currentIndex = index;
         });
       },
       items: [
+        BottomNavigationBarItem(icon: Icon(Icons.map), title: Text('Mapas')),
         BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          title: Text('Mapas')
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.brightness_5),
-          title: Text('Direcciones')
-        )
+            icon: Icon(Icons.brightness_5), title: Text('Direcciones'))
       ],
     );
   }
 
-  Widget _callPage(int paginaActual){
-    switch( paginaActual ){
-      case 0: return MapasPage();
-      case 1: return DireccionesPage();
+  Widget _callPage(int paginaActual) {
+    switch (paginaActual) {
+      case 0:
+        return MapasPage();
+      case 1:
+        return DireccionesPage();
       default:
-      return MapasPage();
+        return MapasPage();
     }
   }
 }

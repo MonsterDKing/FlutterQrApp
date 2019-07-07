@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qrreaderapp/src/bloc/Scans.dart';
 import 'package:qrreaderapp/src/models/scan_model.dart';
+import 'package:qrreaderapp/src/utils/utils.dart' as util;
 
 class MapasPage extends StatelessWidget {
 
@@ -30,6 +31,7 @@ class MapasPage extends StatelessWidget {
                   ),
                   key: UniqueKey(),
                   child: ListTile(
+                    onTap: () => util.abrirScan(scans[i],context),
                     leading: Icon(
                       Icons.cloud_queue,
                       color: Theme.of(context).primaryColor,
